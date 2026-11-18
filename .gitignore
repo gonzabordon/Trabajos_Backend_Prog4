@@ -1,0 +1,20 @@
+# Entorno virtual
+.venv/
+venv/
+env/
+
+# Caché de Python y Pytest
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Base de datos local SQLite
+*.db
+*.sqlite
+*.sqlite3
+
+# Configuración de editores
+.vscode/
+.idea/
