@@ -1,8 +1,0 @@
-# Ignorar todo por defecto en C:\Prog4
-/*
-
-# Permitir este mismo archivo .gitignore
-!/.gitignore
-
-# Proyectos habilitados para subir al repositorio:
-!/TP2-fastapi-sqlmodel/
