@@ -1,13 +1,13 @@
 # API REST - Sistema de Gestión de Biblioteca
 
-API RESTful desarrollada con **FastAPI** y **SQLModel** para administrar el catálogo de libros, autores, socios y el circuito completo de préstamos y devoluciones de una biblioteca, aplicando arquitectura modular en capas, validaciones de negocio y pruebas automatizadas con **100 % de cobertura**.
+API RESTful desarrollada con **FastAPI** y **SQLModel** para administrar el catálogo de libros, autores, socios y el circuito completo de préstamos y devoluciones de una biblioteca, aplicando arquitectura modular en capas, inyección de dependencias, validaciones de negocio y pruebas automatizadas con **100 % de cobertura**.
 
 ---
 
 ## Tecnologías Utilizadas
 
 * **Python 3.13+**
-* **FastAPI** — Framework web para la construcción de endpoints REST y documentación automática OpenAPI/Swagger.
+* **FastAPI** — Framework web para la construcción de endpoints REST, inyección de dependencias (`Depends`) y documentación automática OpenAPI/Swagger.
 * **SQLModel** — ORM y validación de esquemas basado en SQLAlchemy y Pydantic.
 * **SQLite** — Base de datos relacional embebida.
 * **Uvicorn** — Servidor ASGI de alto rendimiento.
@@ -17,10 +17,10 @@ API RESTful desarrollada con **FastAPI** y **SQLModel** para administrar el cat�
 
 ## Arquitectura y Estructura del Proyecto
 
-El proyecto sigue una separación de responsabilidades en capas (`models`, `services`, `routers` y `tests`):
+El proyecto sigue una separación estricta de responsabilidades en capas (`models`, `repositories`, `services`, `routers` y `tests`), donde únicamente `repositories` interactúa con la sesión de base de datos (`Session`) y cada capa se inyecta mediante `Annotated[..., Depends()]`:
 
 ```text
-TP2-fastpi-sqlmodel/
+TP2-fastapi-sqlmodel/
 ├── main.py                     # Punto de entrada de la aplicación y registro de routers
 ├── database.py                 # Configuración del motor SQLite, creación de tablas y sesiones
 ├── requirements.txt            # Dependencias del proyecto
@@ -32,13 +32,19 @@ TP2-fastpi-sqlmodel/
 │   ├── libro_autor.py
 │   ├── socio.py
 │   └── prestamo.py
-├── services/                   # Lógica de negocio, reglas de validación y transacciones
+├── repositories/               # Acceso a datos, consultas SQLModel y persistencia (Session)
+│   ├── __init__.py
+│   ├── autor_repository.py
+│   ├── libro_repository.py
+│   ├── socio_repository.py
+│   └── prestamo_repository.py
+├── services/                   # Lógica de negocio y reglas de validación (sin acceso directo a Session)
 │   ├── __init__.py
 │   ├── autor_service.py
 │   ├── libro_service.py
 │   ├── socio_service.py
 │   └── prestamo_service.py
-├── routers/                    # Definición de rutas HTTP, parámetros y códigos de estado
+├── routers/                    # Definición de rutas HTTP, inyección de servicios y códigos de estado
 │   ├── __init__.py
 │   ├── autores.py
 │   ├── libros.py
@@ -121,11 +127,11 @@ TP2-fastpi-sqlmodel/
 
 ## Instalación y Ejecución
 
-### 1. Clonar el repositorio
+### 1. Clonar el repositorio y entrar al proyecto
 
 ```bash
-git clone [https://github.com/tu-usuario/tu-repositorio.git](https://github.com/tu-usuario/tu-repositorio.git)
-cd tu-repositorio
+git clone https://github.com/gonzabordon/Trabajos_Backend_Prog4.git
+cd Trabajos_Backend_Prog4/TP2-fastapi-sqlmodel
 ```
 
 ### 2. Crear y activar el entorno virtual
@@ -165,7 +171,7 @@ Una vez iniciado el servidor, accede a la documentación interactiva en tu naveg
 
 Las pruebas utilizan una base de datos **SQLite en memoria** (`StaticPool`) aislada por test, sin modificar el archivo `biblioteca.db` de desarrollo.
 
-Para ejecutar toda la suite de pruebas desde la raíz del proyecto:
+Para ejecutar toda la suite de pruebas desde la raíz de `TP2-fastapi-sqlmodel`:
 
 ```bash
 pytest -v
@@ -174,5 +180,5 @@ pytest -v
 Para ejecutar las pruebas junto con el reporte de cobertura de código:
 
 ```bash
-pytest --cov=models --cov=routers --cov=services --cov=main --cov=database --cov-report=term-missing
+pytest --cov=models --cov=repositories --cov=routers --cov=services --cov=main --cov=database --cov-report=term-missing
 ```
